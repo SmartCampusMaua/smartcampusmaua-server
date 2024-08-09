@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createClient } from '@supabase/supabase-js';
+import { Response } from 'express';
+
+
 
 ConfigModule.forRoot()
 
@@ -18,7 +21,7 @@ export class AuthService {
     const { data, error } = await this.supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
-        redirectTo: process.env.REDIRECT_URL, // URL para redirecionar após o login
+        redirectTo: process.env.CALLBACK_URL, // URL para redirecionar após o login
         scopes: 'email',
       },
       
@@ -61,6 +64,31 @@ export class AuthService {
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');
+    }
+  }
+
+  async logOutWithAzure(res: Response) {
+    const { error } = await this.supabase.auth.signOut()
+
+    if (error){
+      return error.message
+    }
+
+    // Remove o cookie de sessão
+    res.clearCookie('_session', {
+      httpOnly: true,
+      secure: process.env.DEPLOY_MODE === 'prod',
+      path: '/',
+    });   
+  }
+
+  async checkSession() {
+    const { data: { session }, error } = await this.supabase.auth.getSession();
+
+    if (session) {
+      return true
+    } else {
+      return false
     }
   }
 }

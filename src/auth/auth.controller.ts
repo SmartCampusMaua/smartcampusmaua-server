@@ -16,16 +16,30 @@ export class AuthController {
             return res.status(400).json({ error: error.message });
           }
     }
-    
-    @Get('logout')
-    logout(@Res() res: Response) {
-        try {
-        } catch (error) {
-        }
-    }
 
     @Get('callback')
     async callback(@Req() req: Request, @Res() res: Response) {
       await this.authService.getAccessToken({res, req})
+    }
+
+    @Get('logout')
+    async logout(@Res() res: Response) {
+        try {
+          await this.authService.logOutWithAzure(res);
+          return res.redirect(process.env.FRONT_BASE_URL);
+        } catch (error) {
+          return res.status(400).json({ error: error.message });
+        }
+    }
+
+    @Get('check-session')
+    async checkSession(@Req() req: Request, @Res() res: Response) {
+      const sessionCookie = req.cookies['_session'];
+  
+      if (sessionCookie ) {
+        return res.json({ isAuthenticated: await this.authService.checkSession() });
+      } else {
+        return res.json({ isAuthenticated: false})
+      } 
     }
 }
