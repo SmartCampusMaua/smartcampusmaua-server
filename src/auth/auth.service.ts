@@ -1,20 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createClient } from '@supabase/supabase-js';
 import { Response } from 'express';
-
-
+import { PrismaService } from 'src/services/prisma.service';
+import { SupabaseService } from 'src/services/supabase.service';
 
 ConfigModule.forRoot()
 
 @Injectable()
 export class AuthService {
-  private supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {
-    auth: {
-      detectSessionInUrl: true,
-      flowType: 'pkce',
-  }
-  });
+  constructor(private prisma: PrismaService, private supabaseClient: SupabaseService) {}
+
+  private supabase = this.supabaseClient.getSupabase()
 
   async signInWithAzure() {
     // Inicia o fluxo de login com o provedor de OAuth
@@ -22,9 +18,8 @@ export class AuthService {
       provider: 'azure',
       options: {
         redirectTo: process.env.CALLBACK_URL, // URL para redirecionar após o login
-        scopes: 'email',
+        scopes: 'email'
       },
-      
     });
 
     if (error) {
@@ -35,7 +30,7 @@ export class AuthService {
     return data.url;
   }
 
-  async getAccessToken({req, res}) {
+  async getSession(req: { query: { code: string; }; }) {
     try {
       const { code } = req.query;
 
@@ -43,8 +38,17 @@ export class AuthService {
         throw new Error('Code is missing');
       }
 
-      const session = await this.supabase.auth.exchangeCodeForSession(code)
-      
+      const session = await this.supabase.auth.exchangeCodeForSession(code)      
+
+      return session 
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async setCookie({req, res}) {
+    try {
+      const session = await this.getSession(req)
       // Verifica se expires_in é um número
       const expiresInMs = session.data.session.expires_in * 1000;
       if (isNaN(expiresInMs)) {
@@ -58,9 +62,24 @@ export class AuthService {
         path: '/',
         maxAge: expiresInMs,
       });
+      
+      const isUserCreated = await this.prisma.user.findUnique({
+        where: {
+          userId: session.data.user.id,
+        }
+      })
 
+      if (!isUserCreated)
+        await this.prisma.user.create({
+          data: {
+            userId: session.data.user.id,
+            darkmode: false,          
+          },
+        })      
+    
       // Redireciona o usuário de volta para a aplicação
-      return res.redirect('http://localhost:3000/');
+      console.log(await this.supabase.auth.getUser())
+      return res.redirect('http://localhost:3000/');      
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');
