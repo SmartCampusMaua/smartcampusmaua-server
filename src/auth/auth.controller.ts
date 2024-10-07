@@ -49,4 +49,16 @@ export class AuthController {
       return res.status(400).json({ error: error.message });
     }
   }
+
+  @Get('displayname')
+  async getDisplayName(@Res() res: Response) {
+    try {
+      const displayName = await this.authService.getUserDisplayName();
+      console.log(displayName)
+      return res.json({ displayName }); // Retornando o nome formatado
+    } catch (error) {
+      return res.status(500).json({ error: 'Erro ao obter o nome de exibição' });
+    }
+  }
 }
+

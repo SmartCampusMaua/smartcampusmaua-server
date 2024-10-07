@@ -18,7 +18,7 @@ export class AuthService {
       provider: 'azure',
       options: {
         redirectTo: process.env.CALLBACK_URL, // URL para redirecionar após o login
-        scopes: 'email'
+        scopes: 'email profile'
       },
     });
 
@@ -78,12 +78,28 @@ export class AuthService {
         })      
     
       // Redireciona o usuário de volta para a aplicação
-      console.log(await this.supabase.auth.getUser())
       return res.redirect('http://localhost:3000/');      
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');
     }
+  }
+
+  async getUserDisplayName() {
+    const { data } = await this.supabase.auth.getSession();
+    if (data.session){
+      const displayname = data.session.user.user_metadata["full_name"];
+    
+      // Verifica se displayname não é nulo ou indefinido
+      if (displayname) {
+        return displayname
+          .split(' ') // Divide o nome completo em palavras
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitaliza cada palavra
+          .join(' '); // Junta as palavras novamente com um espaço
+      }
+      return 'undefined';
+  }
+    return 'undefined'; // Retorna undefined se o nome não estiver disponível
   }
 
   async logOutWithAzure(res: Response) {

@@ -3,6 +3,7 @@ import { Response  } from 'express';
 import { UserDataService } from './userData.service';
 import { Request } from 'express';
 
+
 @Controller('userData')
 export class UserDataController {
     constructor(private userDataService: UserDataService) {}
@@ -49,3 +50,4 @@ export class UserDataController {
       }
     }
 }
+
