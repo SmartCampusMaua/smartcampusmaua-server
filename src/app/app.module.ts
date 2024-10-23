@@ -6,8 +6,7 @@ import { AuthModule } from '../auth/auth.module';
 import { UserDataModule } from 'src/userData/userData.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(), AuthModule, UserDataModule],
+  imports: [ConfigModule.forRoot({isGlobal: true}), AuthModule, UserDataModule],
   controllers: [AppController],
   providers: [AppService],
 })

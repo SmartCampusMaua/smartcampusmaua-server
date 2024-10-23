@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { PrismaService } from 'src/services/prisma.service';
 import { SupabaseService } from 'src/services/supabase.service';
 
-ConfigModule.forRoot()
-
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private supabaseClient: SupabaseService) {}
+  constructor(private prisma: PrismaService, private supabaseClient: SupabaseService, private configService: ConfigService) {}
 
   private supabase = this.supabaseClient.getSupabase()
 
@@ -17,7 +15,7 @@ export class AuthService {
     const { data, error } = await this.supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
-        redirectTo: process.env.CALLBACK_URL, // URL para redirecionar após o login
+        redirectTo: this.configService.get<string>('CALLBACK_URL'), // URL para redirecionar após o login
         scopes: 'email profile'
       },
     });
@@ -112,7 +110,7 @@ export class AuthService {
     // Remove o cookie de sessão
     res.clearCookie('_session', {
       httpOnly: true,
-      secure: process.env.DEPLOY_MODE === 'prod',
+      secure: this.configService.get<string>('DEPLOY_MODE') === 'prod',
       path: '/',
     });   
   }
