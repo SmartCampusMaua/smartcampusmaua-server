@@ -49,8 +49,8 @@ export class AuthService {
 
   async setCookie({req, res}) {
     try {
-      const GmsWebUrl = this.configService.get<string>('GMS_WEB_URL')
-      const GmsWebPort = this.configService.get<string>('GMS_WEB_PORT')
+      const smartcampusmauaWebUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
+      const smartcampusmauaWebPort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
 
       const session = await this.getSession(req)
       // Verifica se expires_in é um número
@@ -82,7 +82,7 @@ export class AuthService {
         })      
     
       // Redireciona o usuário de volta para a aplicação
-      return res.redirect(`${GmsWebUrl}:${GmsWebPort}/gms/reservatorios`);      
+      return res.redirect(`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}/modulos`);      
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');

@@ -15,11 +15,12 @@ async function bootstrap() {
   const gmsWebUrl = configService.get<string>('GMS_WEB_URL')
   const gmsWebPort = configService.get<string>('GMS_WEB_PORT')
 
+  const smartcampusmauaServerUrl = configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
   const smartcampusmauaServerPort = configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
 
   const corsOptions: CorsOptions = {
-    origin: [`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}`, `${gmsWebUrl}:${gmsWebPort}`], // Allow this origin
-    methods: 'GET,POST',
+    origin: [`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}`, `${gmsWebUrl}:${gmsWebPort}`, `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}`], // Allow this origin
+    methods: 'GET,POST,OPTIONS',
     credentials: true, // Enable credentials (cookies, authorization headers)
   };
 

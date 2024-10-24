@@ -30,9 +30,10 @@ export class AuthController {
   @Get('logout')
   async logout(@Res() res: Response) {
     try {
-      await this.authService.logOutWithAzure(res);
       const loginPageUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
-      return res.redirect(loginPageUrl);
+      const loginPagePort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
+      await this.authService.logOutWithAzure(res);
+      return res.redirect(`${loginPageUrl}:${loginPagePort}`);
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
