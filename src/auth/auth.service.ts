@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { PrismaService } from 'src/services/prisma.service';
-import { SupabaseService } from 'src/services/supabase.service';
+import { SupabaseService } from 'src/services/supabase.service';  
 
 @Injectable()
 export class AuthService {
@@ -11,11 +11,14 @@ export class AuthService {
   private supabase = this.supabaseClient.getSupabase()
 
   async signInWithAzure() {
+    const smartcampusmauaServerUrl = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
+    const smartcampusmauaServerPort = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
+
     // Inicia o fluxo de login com o provedor de OAuth
     const { data, error } = await this.supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
-        redirectTo: this.configService.get<string>('CALLBACK_URL'), // URL para redirecionar após o login
+        redirectTo: `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}/auth/callback`, // URL para redirecionar após o login
         scopes: 'email profile'
       },
     });
@@ -36,7 +39,7 @@ export class AuthService {
         throw new Error('Code is missing');
       }
 
-      const session = await this.supabase.auth.exchangeCodeForSession(code)      
+      const session = await this.supabase.auth.exchangeCodeForSession(code)   
 
       return session 
     } catch (error) {
@@ -46,6 +49,9 @@ export class AuthService {
 
   async setCookie({req, res}) {
     try {
+      const GmsWebUrl = this.configService.get<string>('GMS_WEB_URL')
+      const GmsWebPort = this.configService.get<string>('GMS_WEB_PORT')
+
       const session = await this.getSession(req)
       // Verifica se expires_in é um número
       const expiresInMs = session.data.session.expires_in * 1000;
@@ -76,7 +82,7 @@ export class AuthService {
         })      
     
       // Redireciona o usuário de volta para a aplicação
-      return res.redirect('http://localhost:3000/');      
+      return res.redirect(`${GmsWebUrl}:${GmsWebPort}/gms/reservatorios`);      
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');
@@ -117,7 +123,6 @@ export class AuthService {
 
   async checkSession() {
     const { data: { session }, error } = await this.supabase.auth.getSession();
-
     if (session) {
       return true
     } else {

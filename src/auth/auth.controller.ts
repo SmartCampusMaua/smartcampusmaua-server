@@ -1,10 +1,11 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import { Response, Request  } from 'express';
 import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private configService: ConfigService, private authService: AuthService) {}
   
   @Get('login')
   async login(@Res() res: Response) {
@@ -30,7 +31,8 @@ export class AuthController {
   async logout(@Res() res: Response) {
     try {
       await this.authService.logOutWithAzure(res);
-      return res.redirect(process.env.FRONT_BASE_URL);
+      const loginPageUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
+      return res.redirect(loginPageUrl);
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
