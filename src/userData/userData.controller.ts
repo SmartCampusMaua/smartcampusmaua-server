@@ -4,15 +4,14 @@ import { UserDataService } from './userData.service';
 import { Request } from 'express';
 
 
-@Controller('userData')
+@Controller('api/userData')
 export class UserDataController {
     constructor(private userDataService: UserDataService) {}
     
     @Get('darkmode')
     async getDarkmode(@Res() res: Response, @Req() req: Request) {
       try {
-        const darkModeData = await this.userDataService.getDarkModeData(req);
-        // Redireciona o usuário para a página de login do provedor OAuth
+        const darkModeData = await this.userDataService.getDarkModeData(req); 
         return res.json({ isDarkModeOn: darkModeData });
       } catch (error) {
         return res.json({ isDarkModeOn: false });

@@ -18,7 +18,7 @@ export class AuthService {
     const { data, error } = await this.supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
-        redirectTo: `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}/auth/callback`, // URL para redirecionar após o login
+        redirectTo: `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}/api/auth/callback`, // URL para redirecionar após o login
         scopes: 'email profile'
       },
     });
