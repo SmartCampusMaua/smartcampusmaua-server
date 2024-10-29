@@ -12,7 +12,7 @@ export class AuthController {
     try {
       const redirectTo = await this.authService.signInWithAzure();
       // Redireciona o usuário para a página de login do provedor OAuth
-      return res.redirect(redirectTo);
+      return res.json({loginUrl: redirectTo})
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
