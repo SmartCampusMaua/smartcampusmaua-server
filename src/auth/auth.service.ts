@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { PrismaService } from 'src/services/prisma.service';
-import { SupabaseService } from 'src/services/supabase.service';  
+import { SupabaseService } from 'src/services/supabase.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private supabaseClient: SupabaseService, private configService: ConfigService) {}
+  constructor(private prisma: PrismaService, private supabaseClient: SupabaseService, private configService: ConfigService) { }
 
   private supabase = this.supabaseClient.getSupabase()
 
@@ -39,15 +39,15 @@ export class AuthService {
         throw new Error('Code is missing');
       }
 
-      const session = await this.supabase.auth.exchangeCodeForSession(code)   
+      const session = await this.supabase.auth.exchangeCodeForSession(code)
 
-      return session 
+      return session
     } catch (error) {
       console.log(error)
     }
   }
 
-  async setCookie({req, res}) {
+  async setCookie({ req, res }) {
     try {
       const smartcampusmauaWebUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
       const smartcampusmauaWebPort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
@@ -56,17 +56,17 @@ export class AuthService {
       // Verifica se expires_in é um número
       const expiresInMs = session.data.session.expires_in * 1000;
       if (isNaN(expiresInMs)) {
-          throw new Error('Invalid expiration time');
+        throw new Error('Invalid expiration time');
       }
 
       // Cria o cookie de sessão
-      res.cookie('_session', session.data.session.access_token, { 
+      res.cookie('_session', session.data.session.access_token, {
         httpOnly: true,
         secure: true,
         path: '/',
         maxAge: expiresInMs,
       });
-      
+
       const isUserCreated = await this.prisma.user.findUnique({
         where: {
           userId: session.data.user.id,
@@ -77,12 +77,12 @@ export class AuthService {
         await this.prisma.user.create({
           data: {
             userId: session.data.user.id,
-            darkmode: false,          
+            darkmode: false,
           },
-        })      
-    
+        })
+
       // Redireciona o usuário de volta para a aplicação
-      return res.redirect(`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}/modulos`);      
+      return res.redirect(`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}/modulos`);
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');
@@ -91,9 +91,9 @@ export class AuthService {
 
   async getUserDisplayName() {
     const { data } = await this.supabase.auth.getSession();
-    if (data.session){
+    if (data.session) {
       const displayname = data.session.user.user_metadata["full_name"];
-    
+
       // Verifica se displayname não é nulo ou indefinido
       if (displayname) {
         return displayname
@@ -102,14 +102,23 @@ export class AuthService {
           .join(' '); // Junta as palavras novamente com um espaço
       }
       return 'undefined';
-  }
+    }
     return 'undefined'; // Retorna undefined se o nome não estiver disponível
+  }
+
+  async getUserEmail() {
+    const { data } = await this.supabase.auth.getSession();
+    if (data.session) {
+      const email = data.session.user.user_metadata["email"];
+
+      return email;
+    }
   }
 
   async logOutWithAzure(res: Response) {
     const { error } = await this.supabase.auth.signOut()
 
-    if (error){
+    if (error) {
       return error.message
     }
 
@@ -118,7 +127,7 @@ export class AuthService {
       httpOnly: true,
       secure: this.configService.get<string>('DEPLOY_MODE') === 'prod',
       path: '/',
-    });   
+    });
   }
 
   async checkSession() {
