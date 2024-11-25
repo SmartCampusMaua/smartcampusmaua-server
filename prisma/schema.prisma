@@ -9,8 +9,9 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  userId String  @unique
+  id       Int      @id @default(autoincrement())
+  userId   String   @unique
   modules  String[]
   darkmode Boolean
+  email    String   @unique
 }

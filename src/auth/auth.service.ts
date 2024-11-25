@@ -73,13 +73,18 @@ export class AuthService {
         }
       })
 
-      if (!isUserCreated)
-        await this.prisma.user.create({
-          data: {
-            userId: session.data.user.id,
-            darkmode: false,
-          },
-        })
+      if (!isUserCreated) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_URL}:${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_PORT}/api/auth/email`);
+        const dataEmail = await response.json();
+        if (dataEmail)
+          await this.prisma.user.create({
+            data: {
+              userId: session.data.user.id,
+              darkmode: false,
+              email: dataEmail.displayName
+            },
+          })
+      }
 
       // Redireciona o usuário de volta para a aplicação
       return res.redirect(`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}/modulos`);
