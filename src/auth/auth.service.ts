@@ -11,8 +11,8 @@ export class AuthService {
   private supabase = this.supabaseClient.getSupabase()
 
   async signInWithAzure() {
-    const smartcampusmauaServerUrl = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
-    const smartcampusmauaServerPort = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
+    // const smartcampusmauaServerUrl = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
+    // const smartcampusmauaServerPort = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
 
     // Inicia o fluxo de login com o provedor de OAuth
     const { data, error } = await this.supabase.auth.signInWithOAuth({
@@ -50,8 +50,8 @@ export class AuthService {
 
   async setCookie({ req, res }) {
     try {
-      const smartcampusmauaWebUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
-      const smartcampusmauaWebPort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
+      // const smartcampusmauaWebUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
+      // const smartcampusmauaWebPort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
 
       const session = await this.getSession(req)
       // Verifica se expires_in é um número
@@ -75,7 +75,8 @@ export class AuthService {
       })
 
       if (!isUserCreated) {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_URL}:${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_PORT}/api/auth/email`);
+        // const response = await fetch(`${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_URL}:${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_PORT}/api/auth/email`);
+        const response = await fetch(`https://smartcampus-k8s.maua.br/api/auth/email`);
         const dataEmail = await response.json();
         if (dataEmail)
           await this.prisma.user.create({
