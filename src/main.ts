@@ -27,6 +27,6 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors(corsOptions);
 
-  await app.listen(smartcampusmauaServerPort);
+  await app.listen(smartcampusmauaServerPort, '0.0.0.0');
 }
 bootstrap();
