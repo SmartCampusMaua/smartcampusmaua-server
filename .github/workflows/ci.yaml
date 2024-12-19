@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: rogeriocassares/smartcampusmaua-server:0.3.2
+          tags: rogeriocassares/smartcampusmaua-server:0.3.3
 
