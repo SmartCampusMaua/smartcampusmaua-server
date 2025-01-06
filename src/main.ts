@@ -20,7 +20,8 @@ async function bootstrap() {
 
   const corsOptions: CorsOptions = {
     // origin: [`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}`, `${gmsWebUrl}:${gmsWebPort}`, `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}`], // Allow this origin
-    origin: [`https://smartcampus-k8s.maua.br`], // Allow this origin
+    // origin: [`https://smartcampus-k8s.maua.br`], // Allow this origin
+    origin: [`http://localhost:3000`], // Allow this origin
     methods: 'GET,POST,OPTIONS',
     credentials: true, // Enable credentials (cookies, authorization headers)
   };
@@ -28,6 +29,6 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors(corsOptions);
 
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(3001, '0.0.0.0');
 }
 bootstrap();

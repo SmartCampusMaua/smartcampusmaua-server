@@ -19,7 +19,8 @@ export class AuthService {
       provider: 'azure',
       options: {
         // redirectTo: `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}/api/auth/callback`, // URL para redirecionar após o login
-        redirectTo: `https://smartcampus-k8s.maua.br/api/auth/callback`, // URL para redirecionar após o login
+        // redirectTo: `https://smartcampus-k8s.maua.br/api/auth/callback`, // URL para redirecionar após o login
+        redirectTo: `http://localhost:3001/api/auth/callback`, // URL para redirecionar após o login
         scopes: 'email profile'
       },
     });
@@ -76,7 +77,8 @@ export class AuthService {
 
       if (!isUserCreated) {
         // const response = await fetch(`${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_URL}:${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_PORT}/api/auth/email`);
-        const response = await fetch(`https://smartcampus-k8s.maua.br/api/auth/email`);
+        // const response = await fetch(`https://smartcampus-k8s.maua.br/api/auth/email`);
+        const response = await fetch(`http://localhost:3001/api/auth/email`);
         const dataEmail = await response.json();
         if (dataEmail)
           await this.prisma.user.create({
@@ -90,7 +92,8 @@ export class AuthService {
 
       // Redireciona o usuário de volta para a aplicação
       // return res.redirect(`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}/modulos`);
-      return res.redirect(`https://smartcampus-k8s.maua.br/modulos`);
+      // return res.redirect(`https://smartcampus-k8s.maua.br/modulos`);
+      return res.redirect(`http://localhost:3000/modulos`);
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');

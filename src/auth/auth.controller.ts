@@ -34,7 +34,8 @@ export class AuthController {
       // const loginPagePort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
       await this.authService.logOutWithAzure(res);
       // return res.redirect(`${loginPageUrl}:${loginPagePort}`);
-      return res.redirect(`http://smartcampus-k8s.maua.br`);
+      // return res.redirect(`http://smartcampus-k8s.maua.br`);
+      return res.redirect(`http://localhost:3000`);
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
