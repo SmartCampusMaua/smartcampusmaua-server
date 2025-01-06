@@ -11,16 +11,16 @@ export class AuthService {
   private supabase = this.supabaseClient.getSupabase()
 
   async signInWithAzure() {
-    // const smartcampusmauaServerUrl = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
-    // const smartcampusmauaServerPort = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
+    const smartcampusmauaServerUrl = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
+    const smartcampusmauaServerPort = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
 
     // Inicia o fluxo de login com o provedor de OAuth
     const { data, error } = await this.supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
-        // redirectTo: `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}/api/auth/callback`, // URL para redirecionar após o login
+        redirectTo: `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}/api/auth/callback`, // URL para redirecionar após o login
         // redirectTo: `https://smartcampus-k8s.maua.br/api/auth/callback`, // URL para redirecionar após o login
-        redirectTo: `http://localhost:3001/api/auth/callback`, // URL para redirecionar após o login
+        // redirectTo: `http://localhost:3001/api/auth/callback`, // URL para redirecionar após o login
         scopes: 'email profile'
       },
     });
@@ -51,8 +51,10 @@ export class AuthService {
 
   async setCookie({ req, res }) {
     try {
-      // const smartcampusmauaWebUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
-      // const smartcampusmauaWebPort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
+      const smartcampusmauaWebUrl = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
+      const smartcampusmauaWebPort = this.configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
+      const smartcampusmauaServerUrl = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
+      const smartcampusmauaServerPort = this.configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
 
       const session = await this.getSession(req)
       // Verifica se expires_in é um número
@@ -76,9 +78,9 @@ export class AuthService {
       })
 
       if (!isUserCreated) {
-        // const response = await fetch(`${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_URL}:${process.env.NEXT_PUBLIC_SMARTCAMPUSMAUA_SERVER_PORT}/api/auth/email`);
+        const response = await fetch(`${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}/api/auth/email`);
         // const response = await fetch(`https://smartcampus-k8s.maua.br/api/auth/email`);
-        const response = await fetch(`http://localhost:3001/api/auth/email`);
+        // const response = await fetch(`http://localhost:3001/api/auth/email`);
         const dataEmail = await response.json();
         if (dataEmail)
           await this.prisma.user.create({
@@ -91,9 +93,9 @@ export class AuthService {
       }
 
       // Redireciona o usuário de volta para a aplicação
-      // return res.redirect(`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}/modulos`);
+      return res.redirect(`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}/modulos`);
       // return res.redirect(`https://smartcampus-k8s.maua.br/modulos`);
-      return res.redirect(`http://localhost:3000/modulos`);
+      // return res.redirect(`http://localhost:3000/gms/devices`);
     } catch (error) {
       console.error('Error during callback processing:', error.message);
       return res.status(400).send('Authentication failed');

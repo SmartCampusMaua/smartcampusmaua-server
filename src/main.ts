@@ -9,19 +9,18 @@ async function bootstrap() {
   
   const configService = app.get<ConfigService>(ConfigService);
 
-  // const smartcampusmauaWebUrl = configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
-  // const smartcampusmauaWebPort = configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
+  const smartcampusmauaWebUrl = configService.get<string>('SMARTCAMPUSMAUA_WEB_URL')
+  const smartcampusmauaWebPort = configService.get<string>('SMARTCAMPUSMAUA_WEB_PORT')
 
-  // const gmsWebUrl = configService.get<string>('GMS_WEB_URL')
-  // const gmsWebPort = configService.get<string>('GMS_WEB_PORT')
+  const smartcampusmauaServerUrl = configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
+  const smartcampusmauaServerPort = configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
 
-  // const smartcampusmauaServerUrl = configService.get<string>('SMARTCAMPUSMAUA_SERVER_URL')
-  // const smartcampusmauaServerPort = configService.get<string>('SMARTCAMPUSMAUA_SERVER_PORT')
+  const port = configService.get<string>('PORT')
 
   const corsOptions: CorsOptions = {
-    // origin: [`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}`, `${gmsWebUrl}:${gmsWebPort}`, `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}`], // Allow this origin
+    origin: [`${smartcampusmauaWebUrl}:${smartcampusmauaWebPort}`, `${smartcampusmauaServerUrl}:${smartcampusmauaServerPort}`], // Allow this origin
     // origin: [`https://smartcampus-k8s.maua.br`], // Allow this origin
-    origin: [`http://localhost:3000`], // Allow this origin
+    // origin: [`http://localhost:3000`, `https://smartcampus-k8s.maua.br`], // Allow this origin
     methods: 'GET,POST,OPTIONS',
     credentials: true, // Enable credentials (cookies, authorization headers)
   };
@@ -29,6 +28,6 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors(corsOptions);
 
-  await app.listen(3001, '0.0.0.0');
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
