@@ -1,11 +1,11 @@
-name: nest-dockerfile-workflow
+name: smartcampusmaua-server-workflow
 on:
   push:
     branches:
       - develop
 jobs:
   check-application:  
-    name: deploy-job
+    name: build-job
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: rogeriocassares/smartcampusmaua-server:0.3.8
+          tags: smartcampusmaua/smartcampusmaua-server:0.3.8
 
